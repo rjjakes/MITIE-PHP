@@ -55,8 +55,8 @@ void do_MITIE()
     {
         if (1)  //argc != 3)
         {
-            printf("You must give a MITIE ner model file as the first command line argument\n");
-            printf("followed by a text file to process.\n");
+////            printf("You must give a MITIE ner model file as the first command line argument\n");
+////            printf("followed by a text file to process.\n");
 ////            return EXIT_FAILURE;
         }
 
@@ -67,9 +67,7 @@ void do_MITIE()
         // it so it is just ignored.
         string classname;
         named_entity_extractor ner;
-        dlib::deserialize("model_file.dat") >> classname >> ner;
-
-        return;
+        dlib::deserialize("MITIE/MITIE-models/english/ner_model.dat") >> classname >> ner;
 
         // Print out what kind of tags this tagger can predict.
         const std::vector<string> tagstr = ner.get_tag_name_strings();
@@ -77,9 +75,8 @@ void do_MITIE()
         for (unsigned int i = 0; i < tagstr.size(); ++i)
             cout << "   " << tagstr[i] << endl;
 
-
         // Before we can try out the tagger we need to load some data.
-        std::vector<string> tokens = tokenize_file("input.txt");
+        std::vector<string> tokens = tokenize_file("MITIE/sample_text.txt");
 
         std::vector<pair<unsigned long, unsigned long> > chunks;
         std::vector<unsigned long> chunk_tags;

@@ -8,6 +8,7 @@ MITIEDIR = ./MITIE/mitielib
 CPP             = g++
 RM              = rm -f
 CPP_FLAGS       = -Wall -c -I. -O2 -std=c++11 -fPIC -W -O3 -I$(MITIEDIR)/include -I$(DLIBDIR)
+LDFLAGS         = $(MITIEDIR)/libmitie.a -lpthread
 
 
 #Edit these lines to correspond with your own directories
@@ -28,7 +29,7 @@ OBJECTS         = $(SOURCES:%.cpp=%.o)
 all:	${OBJECTS} ${RESULT}
 
 ${RESULT}: ${OBJECTS}
-		${LD} ${LD_FLAGS} -o $@ ${OBJECTS} -lphpcpp
+		${LD} ${LD_FLAGS} -o $@ ${OBJECTS} -lphpcpp -o $@ $(LDFLAGS)
 
 clean:
 		${RM} *.obj *~* ${OBJECTS} ${RESULT}
