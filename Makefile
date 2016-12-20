@@ -7,22 +7,20 @@ MITIEDIR = ./MITIE/mitielib
 # Set up PHP-CPP compilation
 CPP             = g++
 RM              = rm -f
-CPP_FLAGS       = -Wall -c -I. -I/home/work/include/ -O2 -std=c++11 -fPIC -W -O3 -I$(MITIEDIR)/include -I$(DLIBDIR)
-
-PREFIX			= /home/work/
-
+CPP_FLAGS       = -Wall -c -I. -O2 -std=c++11 -fPIC -W -O3 -I$(MITIEDIR)/include -I$(DLIBDIR)
 
 
 #Edit these lines to correspond with your own directories
-LIBRARY_DIR		= ${PREFIX}/local/php/lib/php/extensions/no-debug-non-zts-20090626/
+EXTENSION_DIR	=	$(shell php-config --extension-dir)
 
-PHP_CONFIG_DIR	= /home/work/local/php/lib/
+PHP_INI_DIR	    = /etc/php/5.6/mods-available/
+PHP_CONFIG_DIR	= /etc/php/5.6/cli/conf.d/
 
 LD              = g++
 LD_FLAGS        = -Wall -Wl,-rpath,/home/work/lib -shared -O2 -L/home/work/lib
 RESULT          = MITIE.so
 
-PHPINIFILE		= 30-MITIE.ini
+PHPINIFILE		= MITIE.ini
 
 SOURCES			= $(wildcard *.cpp)
 OBJECTS         = $(SOURCES:%.cpp=%.o)
@@ -38,9 +36,10 @@ clean:
 ${OBJECTS}: 
 		${CPP} ${CPP_FLAGS} -fpic -o $@ ${@:%.o=%.cpp}
 
-#install:
-#		cp -f ${RESULT} ${LIBRARY_DIR}
-#		cp -f ${PHPINIFILE}	${PHP_CONFIG_DIR}
+install:
+		cp -f ${RESULT} ${EXTENSION_DIR}
+		cp -f ${PHPINIFILE}	${PHP_INI_DIR}
+		ln -s -f ${PHP_INI_DIR}${PHPINIFILE} ${PHP_CONFIG_DIR}30-${PHPINIFILE}
 
 new:
 		clean

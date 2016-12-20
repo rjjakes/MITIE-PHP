@@ -1,5 +1,5 @@
 /**
- *  MITIE.h
+ *  MITIE.h (MITIE-PHP Project)
  *
  *  An extension that bridges the MITIE information extraction library with PHP
  *
@@ -21,6 +21,10 @@
  */
 using namespace std;
 
+void do_MITIE()
+{
+    cout << "C++ code!" << endl;
+}
 
 Php::Value bubblesort(Php::Parameters &params)
 {
@@ -117,33 +121,33 @@ static Php::Value my_plus(Php::Parameters &params)
 /**
  *  Custom class that will be available in PHP
  */
-class MyCustomClass : public Php::Base
+class MITIEClass : public Php::Base
 {
 private:
     int _x;
     
 public:
-    MyCustomClass()
+    MITIEClass()
     {
         _x = 3;
-        cout << "MyCustomClass::MyCustomClass" << endl;
+        cout << "MITIEClass::MITIEClass" << endl;
         cout << this << endl;
         cout << _x << endl;
     }
     
-    virtual ~MyCustomClass()
+    virtual ~MITIEClass()
     {
-        cout << "MyCustomClass::~MyCustomClass" << endl;
+        cout << "MITIEClass::~MITIEClass" << endl;
     }
 
     virtual void __construct()
     {
-        cout << "MyCustomClass::__construct" << endl;
+        cout << "MITIEClass::__construct" << endl;
     }
 
     virtual void __destruct()
     {
-        cout << "MyCustomClass::__destruct" << endl;
+        cout << "MITIEClass::__destruct" << endl;
     }
     
     void myMethod(Php::Parameters &params)
@@ -173,21 +177,24 @@ extern "C"
             Php::ByRef("d", Php::Type::String)
         });
         
+        // add function to extension
         extension.add<bubblesort>("bubblesort");
-        
+        extension.add<do_MITIE>("do_MITIE");
+
         // define classes
-        Php::Class<MyCustomClass> myCustomClass("my_class");
-        myCustomClass.method<&MyCustomClass::myMethod>("mymethod");
-        myCustomClass.method<&MyCustomClass::__construct>("__construct");
+        Php::Class<MITIEClass> mITIEClass("my_class");
+        mITIEClass.method<&MITIEClass::myMethod>("mymethod");
+        mITIEClass.method<&MITIEClass::__construct>("__construct");
         
         // add to extension
-        extension.add(myCustomClass);
+        extension.add(mITIEClass);
         
         // return the module entry
         return extension.module();
     }
 }
 
+/*
 using namespace dlib;
 
 namespace mitie
@@ -310,3 +317,4 @@ namespace mitie
 // ----------------------------------------------------------------------------------------
 
 }
+*/
