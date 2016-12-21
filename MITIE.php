@@ -10,18 +10,32 @@
 // https://github.com/mit-nlp/MITIE/releases/download/v0.4/MITIE-models-v0.2.tar.bz2
 $ner = new MITIENer();
 
-// Load the model file and fet the types of tags this model file can output
-$tags = $ner->loadModel("MITIE/MITIE-models/english/ner_model.dat");
-//var_dump($tags);
+// Load the model file and build the types of tags this model file can output
+$ner->loadModel("MITIE/MITIE-models/english/ner_model.dat");
+var_dump($ner->getTags());
 
-// Perform the extraction. This will populate some variables and arrays inside the class.
-// $ner->extraction();
+// Perform the extraction. This will populate the entities object inside the class.
+$ner->extraction();
+var_dump($ner->getEntities());
 
-  // Get the results.
-//  $entities = $ner->getEntities();
-//  var_dump($entities);
+/*
+$entities = array(
+  array(
+    'tag_id' => 0,
+    'score' => 0.634,
+    'tag' => 'ORGANISATION',
+    'token' => 'Kew Gardens'
+  ),
+  array(
+    'tag_id' => 2,
+    'score' => 0.134,
+    'tag' => 'PERSON',
+    'token' => 'John Doe'
+  ),
+);
+*/
 
-//}
+
 
 
 

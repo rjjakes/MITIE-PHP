@@ -99,7 +99,12 @@ class MITIENer : public Php::Base
 private:
     string _classname;
     named_entity_extractor _ner;
-    const std::vector<string> _tagstr
+    std::vector<string> _tagstr;
+    std::vector<string> _tokens;
+    std::vector<pair<unsigned long, unsigned long> > _chunks;
+    std::vector<unsigned long> _chunk_tags;
+    std::vector<double> _chunk_scores;
+
 
 public:
     MITIENer()
@@ -139,50 +144,69 @@ public:
         // it so it is just ignored.
         dlib::deserialize(params[0]) >> _classname >> _ner;
 
-        cout << "Loaded NER data file." << endl;
+//        cout << "Loaded NER data file." << endl;
 
         // Print out what kind of tags this tagger can predict.
         _tagstr = _ner.get_tag_name_strings();
-        cout << "The tagger supports "<< _tagstr.size() <<" tags:" << endl;
-        for (unsigned int i = 0; i < _tagstr.size(); ++i)
-            cout << "   " << _tagstr[i] << endl;
+//        cout << "The tagger supports "<< _tagstr.size() <<" tags:" << endl;
+//        for (unsigned int i = 0; i < _tagstr.size(); ++i)
+//        {
+//            cout << "   " << _tagstr[i] << endl;
+//        }
 
     }
+
+    Php::Value getTags()
+    {
+        // @todo - check this array is set
+        return _tagstr;
+    }
+
 
     void extraction(Php::Parameters &params)
     {
         // Before we can try out the tagger we need to load some data.
-        std::vector<string> tokens = tokenize_file("MITIE/sample_text.txt");
+        _tokens = tokenize_file("MITIE/sample_text.txt");
 
-        std::vector<pair<unsigned long, unsigned long> > chunks;
-        std::vector<unsigned long> chunk_tags;
-        std::vector<double> chunk_scores;
 
         // Now detect all the entities in the text file we loaded and print them to the screen.
         // The output of this function is a set of "chunks" of tokens, each a named entity.
         // Additionally, if it is useful for your application a confidence score for each "chunk"
         // is available by using the predict() method.  The larger the score the more
         // confident MITIE is in the tag.
-        _ner.predict(tokens, chunks, chunk_tags, chunk_scores);
+        _ner.predict(_tokens, _chunks, _chunk_tags, _chunk_scores);
 
         // If a confidence score is not necessary for your application you can detect entities
         // using the operator() method as shown in the following line.
-        //ner(tokens, chunks, chunk_tags);
+        //ner(_tokens, _chunks, _chunk_tags);
 
-        cout << "\nNumber of named entities detected: " << chunks.size() << endl;
-        for (unsigned int i = 0; i < chunks.size(); ++i)
+//        cout << "\nNumber of named entities detected: " << _chunks.size() << endl;
+
+//        cout << this << endl;
+    }
+
+    Php::Value getEntities()
+    {
+        std::vector<string> entities;
+
+        // @todo - check input variables exists
+        for (unsigned int i = 0; i < _chunks.size(); ++i)
         {
-            cout << "   Tag " << chunk_tags[i] << ": ";
-            cout << "Score: " << fixed << setprecision(3) << chunk_scores[i] << ": ";
-            cout << _tagstr[chunk_tags[i]] << ": ";
-            // chunks[i] defines a half open range in tokens that contains the entity.
-            for (unsigned long j = chunks[i].first; j < chunks[i].second; ++j)
-                cout << tokens[j] << " ";
+            cout << "   Tag " << _chunk_tags[i] << ": ";
+            cout << "Score: " << fixed << setprecision(3) << _chunk_scores[i] << ": ";
+            cout << _tagstr[_chunk_tags[i]] << ": ";
+
+//            entities[i] = _tagstr[_chunk_tags[i]];
+
+            // _chunks[i] defines a half open range in tokens that contains the entity.
+            for (unsigned long j = _chunks[i].first; j < _chunks[i].second; ++j)
+                cout << _tokens[j] << " ";
             cout << endl;
         }
 
-        cout << this << endl;
+        return "1"; //entities;
     }
+
 };
 
 /**
@@ -213,6 +237,8 @@ extern "C"
 
         // define classes
         Php::Class<MITIENer> mITIENer("MITIENer");
+        mITIENer.method<&MITIENer::getEntities>("getEntities");
+        mITIENer.method<&MITIENer::getTags>("getTags");
         mITIENer.method<&MITIENer::loadModel>("loadModel");
         mITIENer.method<&MITIENer::extraction>("extraction");
         mITIENer.method<&MITIENer::__construct>("__construct");
