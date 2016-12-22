@@ -9,7 +9,7 @@ In development/unstable.
 
 A PHP 5 extension based on PHP-CPP that wraps the excellent MITIE (MIT Information Extraction) library https://github.com/mit-nlp/MITIE
 
-It allows you to perform named entitiy extraction (and other natural language processing tasks) within your PHP scripts. 
+It currently allows you to perform named entitiy extraction within your PHP scripts (other classes and functions to be added). 
 
 **INSTALLATION**
 
@@ -19,10 +19,10 @@ The library is based on PHP-CPP, so first you need to install php-dev:
 
 `sudo apt-get install php5-dev` or `sudo apt-get install php5.6-dev` (depending on which version of PHP5 you have installed).
 
-Download and install the PHP-CPP_LEGACY library by following the instructions here:
+Download and install the PHP-CPP-LEGACY library by following the instructions here:
 https://github.com/CopernicaMarketingSoftware/PHP-CPP-LEGACY/blob/master/documentation/install.html
 
-Clone the PHP-MITIE repo:
+Clone the MITIE-PHP repo:
 
 `git clone https://github.com/rjjakes/MITIE-PHP.git`
 

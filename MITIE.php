@@ -12,13 +12,16 @@ $ner = new MITIENer();
 
 // Load the model file and build the types of tags this model file can output
 $ner->loadModel("MITIE/MITIE-models/english/ner_model.dat");
-var_dump($ner->getTags());
+print_r($tags = $ner->getTags());
 
 // Perform the extraction. This will populate the entities object inside the class.
-$ner->extraction();
-var_dump($ner->getEntities());
+$ner->extraction("MITIE/sample_text.txt");
+print_r($entities = $ner->getEntities());
 
 /*
+
+$entities will contain something like this:
+
 $entities = array(
   array(
     'tag_id' => 0,
@@ -33,8 +36,8 @@ $entities = array(
     'token' => 'John Doe'
   ),
 );
-*/
 
+*/
 
 
 

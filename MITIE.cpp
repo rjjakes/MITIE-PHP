@@ -17,9 +17,7 @@
 #include <fstream>
 #include <cstdlib>
 
-/**
- *  Namespace to use
- */
+// Namespaces to use
 using namespace std;
 using namespace mitie;
 
@@ -48,50 +46,6 @@ std::vector<string> tokenize_file (
 }
 
 // ----------------------------------------------------------------------------------------
-/*
-void do_MITIE()
-{
-
-    cout << "C++ code!" << endl;
-
-    try
-    {
-        if (1)  //argc != 3)
-        {
-////            printf("You must give a MITIE ner model file as the first command line argument\n");
-////            printf("followed by a text file to process.\n");
-////            return EXIT_FAILURE;
-        }
-
-
-
-////        return EXIT_SUCCESS;
-    }
-    catch (std::exception& e)
-    {
-        cout << e.what() << endl;
-////        return EXIT_FAILURE;
-    }
-
-
-}
-*/
-
-
-// ----------------------------------------------------------------------------------------
-// Demo function placeholder
- /*
-static Php::Value my_plus(Php::Parameters &params)
-{
-    Php::Value r(0);
-    
-    for (unsigned int i=0; i<params.size(); i++) r += params[i];
-    
-    return r;
-}
-*/
-
-// ----------------------------------------------------------------------------------------
 //  Define the NER class
 //
 class MITIENer : public Php::Base
@@ -115,7 +69,6 @@ public:
     
     virtual ~MITIENer()
     {
-//        cout << "MITIENer::~MITIENer" << endl;
     }
 
     virtual void __construct()
@@ -124,13 +77,13 @@ public:
 
     virtual void __destruct()
     {
-//        cout << "MITIENer::__destruct" << endl;
     }
 
     void loadModel(Php::Parameters &params)
     {
         // Check the corretc number of parameters have been passed
-        if (params.size() != 1) {
+        if (params.size() != 1)
+        {
             cout << "loadModel must contain the path to a NER model file." << endl;
             return;
         }
@@ -144,15 +97,8 @@ public:
         // it so it is just ignored.
         dlib::deserialize(params[0]) >> _classname >> _ner;
 
-//        cout << "Loaded NER data file." << endl;
-
         // Print out what kind of tags this tagger can predict.
         _tagstr = _ner.get_tag_name_strings();
-//        cout << "The tagger supports "<< _tagstr.size() <<" tags:" << endl;
-//        for (unsigned int i = 0; i < _tagstr.size(); ++i)
-//        {
-//            cout << "   " << _tagstr[i] << endl;
-//        }
 
     }
 
@@ -165,8 +111,14 @@ public:
 
     void extraction(Php::Parameters &params)
     {
+        if (params.size() != 1)
+        {
+            cout << "extraction() must contain the path to a text file." << endl;
+            return;
+        }
+
         // Before we can try out the tagger we need to load some data.
-        _tokens = tokenize_file("MITIE/sample_text.txt");
+        _tokens = tokenize_file(params[0]);
 
 
         // Now detect all the entities in the text file we loaded and print them to the screen.
@@ -176,35 +128,38 @@ public:
         // confident MITIE is in the tag.
         _ner.predict(_tokens, _chunks, _chunk_tags, _chunk_scores);
 
-        // If a confidence score is not necessary for your application you can detect entities
-        // using the operator() method as shown in the following line.
-        //ner(_tokens, _chunks, _chunk_tags);
-
-//        cout << "\nNumber of named entities detected: " << _chunks.size() << endl;
-
-//        cout << this << endl;
     }
 
     Php::Value getEntities()
     {
-        std::vector<string> entities;
+        Php::Array entities;
 
         // @todo - check input variables exists
         for (unsigned int i = 0; i < _chunks.size(); ++i)
         {
-            cout << "   Tag " << _chunk_tags[i] << ": ";
-            cout << "Score: " << fixed << setprecision(3) << _chunk_scores[i] << ": ";
-            cout << _tagstr[_chunk_tags[i]] << ": ";
+            Php::Array entity;
+            std::string tokens = "";
 
-//            entities[i] = _tagstr[_chunk_tags[i]];
+            entity["tag_id"] = (int)_chunk_tags[i];
+            entity["score"] = (float)_chunk_scores[i];
+            entity["tag"] = _tagstr[_chunk_tags[i]];
 
             // _chunks[i] defines a half open range in tokens that contains the entity.
             for (unsigned long j = _chunks[i].first; j < _chunks[i].second; ++j)
-                cout << _tokens[j] << " ";
-            cout << endl;
+            {
+                if (j != _chunks[i].first)
+                    tokens += " ";
+
+                tokens += (string)_tokens[j];
+            }
+
+            entity["tokens"] = tokens;
+
+            // Add this entity to the enitites array
+            entities[i] = entity;
         }
 
-        return "1"; //entities;
+        return entities;
     }
 
 };
@@ -220,20 +175,6 @@ extern "C"
     { 
         // create extension
         static Php::Extension extension("MITIE","0.1");
-
-        // define the functions
-        /*
-        extension.add<my_plus>("my_plus", {
-            Php::ByVal("a", Php::Type::Numeric),
-            Php::ByVal("b", Php::Type::Numeric),
-            Php::ByVal("c", "MITIENer"),
-            Php::ByRef("d", Php::Type::String)
-        });
-        */
-        
-        // add function to extension
-//        extension.add<bubblesort>("bubblesort");
-//        extension.add<do_MITIE>("do_MITIE");
 
         // define classes
         Php::Class<MITIENer> mITIENer("MITIENer");
